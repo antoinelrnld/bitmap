@@ -50,6 +50,6 @@ void init_info_header(bmp_info_header *info_header);
 void init_color_table(bmp_color_table *color_table, char red, char green, char blue);
 
 // Generates a random image
-void generate_pixel_data(bmp_pixel_data *pixel_data);
+void generate_pixel_data(bmp_pixel_data *pixel_data, int width, int height);
 
 #endif
