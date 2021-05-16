@@ -1,55 +1,61 @@
 #ifndef BMP_H
 #define BMP_H
 
-typedef struct bmp_header_s {
-    char signature[2];              // 'BM'
-    char file_size[4];              // File size in bytes.
-    char reserved[4];               // Unused
-    char data_offset[4];            // Data offset from the begining of the file
-} bmp_header;
+#pragma pack(push, 1) // To avoid struct padding
 
-typedef struct bmp_info_header_s {
-    char size[4];                   // Size of the info header
-    char width[4];                  // Width of image in pixels
-    char height[4];                 // Height of image in pixels
-    char planes[2];                 // Number of planes
-    char bits_per_pixel[2];         // Number of bits per pixel
-    char compression[4];            // Type of compression
-    char image_size[4];             // Compressed size of image
-    char x_pixels_per_m[4];         // Horizontal pixels per meter
-    char y_pixels_per_m[4];         // Vertical pixels per meter
-    char colors_used[4];            // Number of colors used
-    char important_colors[4];       // Number of important colors (0 = all)
-} bmp_info_header;
+// Represents the header of a bitmap file
+typedef struct bmp_header_s { // [14] Bytes
+    unsigned short signature; //  [2] 'BM'
+    unsigned int file_size;   //  [4] File size in bytes
+    unsigned int reserved;    //  [4] Unused
+    unsigned int data_offset; //  [4] Data offset from the begining of the file
+} bmp_header_t;
 
-typedef struct bmp_color_table_s {
-    char red;                       // Red Intensity
-    char green;                     // Green Intensity
-    char blue;                      // Blue Intensity
-    char reserved;                  // Unused
-} bmp_color_table;
+// Represents the info header of a bitmap file
+typedef struct bmp_info_header_s { // [40] Bytes
+    unsigned int size;             //  [4] Size of the info header
+    int width;                     //  [4] Width of image in pixels
+    int height;                    //  [4] Height of image in pixels
+    short planes;                  //  [2] Number of planes
+    short bits_per_pixel;          //  [2] Number of bits per pixel
+    unsigned int compression;      //  [4] Type of compression
+    unsigned int image_size;       //  [4] Compressed size of image
+    int x_pixels_per_m;            //  [4] Horizontal pixels per meter
+    int y_pixels_per_m;            //  [4] Vertical pixels per meter
+    unsigned int colors_used;      //  [4] Number of colors used
+    unsigned int important_colors; //  [4] Number of important colors (0 = all)
+} bmp_info_header_t;
 
-typedef struct bmp_pixel_data_s {
-    char *data;                     // Image data
-} bmp_pixel_data;
+// Represents a pixel
+typedef struct pixel_s { // [3] Bytes
+    unsigned char r;     // [1] Red value
+    unsigned char g;     // [1] Green value
+    unsigned char b;     // [1] Blue value
+} pixel_t;
 
-typedef struct bmp_s {
-    bmp_header header;
-    bmp_info_header  info_header;
-    bmp_color_table *color_table;
-    bmp_pixel_data pixel_data;
-} bmp_file;
+// Represents the raw pixel data field in a bitmap file
+typedef struct bmp_raw_data_s { // [1] Byte
+    pixel_t *pixels;            // [1] Image data
+} bmp_raw_data_t;
+
+// Represents a bitmap file
+typedef struct bmp_file_s {        // [55] Bytes
+    bmp_header_t header;           // [14] The bitmap file header
+    bmp_info_header_t info_header; // [40] The bitmap file info header
+    bmp_raw_data_t raw_data;       //  [1] The raw data
+} bmp_file_t;
+#pragma pack(pop)
+
+// Creates a bitmap file with random pixels
+void create_bmp_file(int width, int height);
 
 // Initializes the bitmap header
-void init_header(bmp_header *header);
+void init_header(bmp_header_t *header, int width, int height);
 
 // Initializes the bitmap info header
-void init_info_header(bmp_info_header *info_header);
+void init_info_header(bmp_info_header_t *info_header, int width, int height);
 
-// Initializes a color table
-void init_color_table(bmp_color_table *color_table, char red, char green, char blue);
-
-// Generates a random image
-void generate_pixel_data(bmp_pixel_data *pixel_data, int width, int height);
+// Generates random pixels
+void generate_random_pixels(bmp_raw_data_t *raw_data, int width, int height);
 
 #endif
