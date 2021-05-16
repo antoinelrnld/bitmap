@@ -9,7 +9,7 @@ void create_bmp_file(int width, int height) {
     FILE *output_file;
 
     // Creation of an output file
-    output_file = fopen("test.bmp", "wb");
+    output_file = fopen("result.bmp", "wb");
 
     // Initialization of different headers
     init_header(&image.header, width, height);
